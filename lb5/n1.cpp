@@ -71,6 +71,9 @@ char isFieldExist(int number)
 
 bool isNumber(const char *str) 
 {
+    if (*str == '+' || *str == '-')
+        str++;
+
     while(*str != '\0')
     {
         if(*str < '0' || *str > '9')
@@ -106,7 +109,7 @@ int inputGraphic(int * g)
 {
     int temp = 0;
 
-    printf("\ngraphic>");
+    printf("\n(2 - хорошая, 1 - нормальная,  0 - плохая)\nГрафика>");
     if ( inputNumber(&temp) != INVALID_INPUT) 
     {
         if ( !(temp >= 0 && temp <= 2) ) return INVALID_INPUT;
@@ -121,7 +124,7 @@ int inputPlayerAm(int * pa)
 // Коды ошибки: -1
 {
     int temp = 0;
-    printf("\nplayers>");
+    printf("\n(1 - индивидуальная,  0 - без ограничений)\nКол-во игроков>");
 
     if ( inputNumber(&temp) != INVALID_INPUT) 
     {
@@ -137,7 +140,7 @@ int inputArate(int * r)
 // Коды ошибки: -1
 {
     int temp = 0;
-    printf("\nave rate>");
+    printf("\n(0 - 100)\nсред. рейтинг>");
 
     if ( inputNumber(&temp) != INVALID_INPUT) 
     {
@@ -170,16 +173,16 @@ int countCharsstrstr(char * countHere, char * chFrom){
 
 int inputNameAndCheckOrThrowEx(char n [])
 {
-    char sep[] = " -,/.!?():;\'\"\n\t";
+    char sep[] = " <>-,/.!?():;\'\"\n\t";
     char str [MAX_SIZE_GNAME];
     const int MAX_SEP_AMOUNT = 7; 
 
-    printf("\nname>");
+    printf("\nимя>");
     gets_s(str, MAX_SIZE_GNAME);
 
     // Если знаков-разделитей неестественно много
     if (countCharsstrstr(str, sep) > MAX_SEP_AMOUNT) {
-        printf( "many seps!" );
+        printf( "Чересчур много разделителей." );
         return -1;
     }
 
@@ -193,7 +196,7 @@ int inputMemoryD(int * m)
 // Коды ошибки: -1
 {
     int temp = 0;
-    printf("\nmemory>");
+    printf("\nместо на диске>");
 
     if ( inputNumber(&temp) != INVALID_INPUT) 
     {
@@ -214,13 +217,13 @@ int checkAgeROrThrowEx(const char s[])
 
     // Синтакическая правильность
     if (s[ps] == '+' ) {
-        printf("\nExpect digit before \"+\"\n");
+        printf("\nОжидалось число перед знаком \"+\"\n");
         isCorrectInput = 0;
     }
     while (s[ps] != '+' && isCorrectInput)
     {
         if ( !isdigit( s[ps++] ) ){
-            printf("\n:EXPECT \"+\" OR DIGIT!!");
+            printf("\n:Ожидался \"+\" или число.");
             printf("\n:%.*s", ps - 1, s);
             printf("\n:%.*s^\n", ps - 1, ds);
             isCorrectInput = 0;
@@ -250,7 +253,7 @@ int inputAgeR(int * ag)
 {
     char str[20];
     char * n;
-    printf("\nage rate>");
+    printf("\n(формат:6+,7+,..,18+,....)\nвозрастной рейтинг>");
     gets_s(str, 20);
     if (checkAgeROrThrowEx(str) == 0)
         return -1;
@@ -318,13 +321,15 @@ void event_rem()
     char acceptCh  = 0;
 
     do {
-        do 
-            do printf("\nrem:");
+        printf("\nВведите -2 для выхода.");
+        do {
+            do printf("\nномер строки для удаления>");
             while (inputNumber( &numberLine ) == INVALID_INPUT);
-        while ( numberLine < 0);
+            if (numberLine == -2) return;
+        } while ( numberLine < 0);
 
         do {
-            printf("\nAre u sure? Y(es), N(o):");
+            printf("\nВы уверены в выборе? Y(es), N(o):");
             acceptCh = getchar();
             if ( tolower(acceptCh) == 'n' ) return;
         } while (tolower(acceptCh) != 'y');
@@ -338,10 +343,10 @@ void event_rem()
         }
         else 
         {
-            printf("\nLine did not find.");
+            printf("\nСтрока с заданным номером не была найдена.");
         }
 
-        printf("\nESC for back");
+        printf("\nНажмите ESCAPE для выхода...");
     } while ( _getch() != 27 );
 }
 
@@ -353,12 +358,12 @@ void event_addRemove()
         clearConsole();
         outputTable();
         
-        printf("\n-- event_addRemove");
-        printf("\ncommands:");
+        printf("\n-- Добавление/Удаление");
+        printf("\nкоманды:");
         printf("\n- 1) ADD");
         printf("\n- 2) REMOVE");
         printf("\n- 3) EXIT\n");
-        printf("\nEnter cmd:");
+        printf("\nВведите команду или номер команды:");
         scanf("%s", inputCommand);
         
         while (getchar() != '\n');
@@ -379,10 +384,10 @@ void event_addRemove()
             break;
         }
         else {
-            printf("\nCommand did not find.");
+            printf("\nКоманда не была найдена.");
         }
 
-        printf("\nESC for back");
+        printf("\nНажмите ESCAPE для выхода...");
     } while(_getch() != 27);
 }
 //
@@ -394,18 +399,22 @@ void event_edit()
     int numberf = 0;
 
     if (amountElTable == 0) {
-        printf("\nLines not!");
+        printf("\nНету записей в таблице.");
         return;
     }
 
+    printf("\nВведите -2 для выхода.");
+
     do {
-        do printf("\nEnter record:");
+        do printf("\nНомер запии>");
         while (inputNumber( &numberl ) == INVALID_INPUT);
+        if (numberl == -2) return;
     } while ( !isLineExist(numberl) );
 
     do {
-        do printf("\nEnter field:");
+        do printf("\nНомер поля>");
         while (inputNumber( &numberf ) == INVALID_INPUT);
+        if (numberf == -2) return;
     } while ( !isFieldExist(numberf) );
 
     fillField(&table[numberl - 1], numberf);
@@ -433,17 +442,17 @@ struct Call
 void inputNameForCall(struct Call *cl)
 {
     do
-        do printf("\nAbslt = %d, inter = %d\n:", cl->ABSOLUTE, cl->INTER);
+        do printf("\nАбсолютное совпадение = %d, Имеется вхождение = %d\n:", cl->ABSOLUTE, cl->INTER);
         while (inputNumber(&cl->nc) == INVALID_INPUT);
     while (cl->nc != cl->ABSOLUTE && cl->nc != cl->INTER);
-    printf("\nname:");
+    printf("\nимя>");
     while ( inputNameAndCheckOrThrowEx(cl->name) == INVALID_INPUT );
 }
 
 void inputMemForCall(struct Call *cl)
 {
     do
-        do printf("\nMORE = %d, LESS = %d\n:", cl->MORE, cl->LESS);
+        do printf("\nБОЛЬШЕ = %d, меньше = %d\n:", cl->MORE, cl->LESS);
         while (inputNumber(&cl->bmem) == INVALID_INPUT);
     while (cl->bmem != cl->MORE && cl->bmem != cl->LESS);
     while ( inputMemoryD(&cl->mem) == INVALID_INPUT );
@@ -452,7 +461,7 @@ void inputMemForCall(struct Call *cl)
 void inputAverForCall(struct Call *cl)
 {
     do 
-        do printf("\nMORE = %d, LESS = %d\n:", cl->MORE, cl->LESS);
+        do printf("\nБОЛЬШЕ = %d, меньше = %d\n:", cl->MORE, cl->LESS);
         while (inputNumber(&cl->barate) == INVALID_INPUT);
     while (cl->barate != cl->MORE && cl->barate != cl->LESS);
     while ( inputArate(&cl->arate) == INVALID_INPUT );
@@ -462,7 +471,7 @@ void inputAverForCall(struct Call *cl)
 void inputAgerateForCall(struct Call *cl)
 {
     do
-        do printf("\nage rate:");
+        do printf("\nвозрастной рейтинг>");
         while (inputNumber(&cl->ageR) == INVALID_INPUT);
     while(cl->ageR < 0 && cl->ageR > 100);
 }
@@ -493,9 +502,12 @@ void inputFieldsForCall(struct Call *cl)
 {
     char fields[8];
 
-    printf("\nfileds:");
+    printf("\nВведите exit для выхода");
+    printf("\nинтересующие поля>");
     gets_s(fields, 7);
-    
+
+    if (stricmp(EXIT_COMMAND, fields)) return;
+
     for (int i = 0; i < 6; ++i)
     {
         switch (fields[i] - '0')
@@ -522,7 +534,7 @@ void event_call()
     call_init_default(&cl);
     inputFieldsForCall(&cl);
 
-    printf("\nNeed:\n");
+    printf("\nЗаписи, удовлетворяющие запросу:\n");
     const struct Record *rec;
     char isNeedRec;
     for (int i = 0; i < amountElTable; ++i)
@@ -535,7 +547,7 @@ void event_call()
             else 
                 isNeedRec = (strstr(rec->gmst.name, cl.name) != NULL);
 
-        if (cl.mem != DEFAULT_INIT_INT && isNeedRec) //REFACTORING !! cl.mem != DEFAULT_INIT_INT
+        if (cl.mem != DEFAULT_INIT_INT && isNeedRec) 
             if (cl.bmem == cl.LESS) isNeedRec = (rec->gmst.memoryD < cl.mem);
             else isNeedRec = (rec->gmst.memoryD > cl.mem);
 
@@ -561,7 +573,7 @@ void event_call()
 
 void outputTable()
 {
-    printf("\n  Line\t\t Name(%d) \t Mem(%d) \t Age(%d) \t Graph(%d) \t Player(%d) \t aver(%d)\n", 
+    printf("\n  Номер\t\t Имя(%d) \t Память(%d) \t Возраст(%d) \t Графика(%d) \t Игроки(%d) \t Оценка(%d)\n", 
             NAME, MEM, AGER, GRAPHIC, PLAYERS, AVERATE);
 
     for (int i = 0; i < amountElTable; i++)
@@ -574,20 +586,20 @@ void outputTable()
 
 void event_exit_program()
 {
-    printf("Bye");
+    printf("Спасибо, что использовали наше ПО. \nДо новых встреч!");
     exit(0);
 }
 
 void intro()
 {
-    printf("\n\n\t\t\tWELCOME!");
-    printf("\n\t\t\tdevelop by https://github.com/eastpriSs");
+    printf("\n\n\t\t\tДобро пожаловать!");
+    printf("\n\t\t\tразработано им -> https://github.com/eastpriSs");
     _getch();
 }
 
 void event_ivalid_command()
 {
-    printf("\nInvalid command\n");
+    printf("\nНеверная команда\n");
 }
 
 // START EVENT
@@ -595,12 +607,12 @@ void start()
 {
     int input = 0;
     
-    printf("\nEnter number:");
-    printf("\n1) ADD/REMOVE");
-    printf("\n2) EDIT");
-    printf("\n3) UN CALL");
-    printf("\n4) EXIT");
-    printf("\ncommand>");
+    printf("\nВведите номер блока:");
+    printf("\n1) Добавление/Удаление");
+    printf("\n2) Редактирование");
+    printf("\n3) Уникальный запрос");
+    printf("\n4) Выход");
+    printf("\nномер блока>");
     
     inputNumber(&input);
 

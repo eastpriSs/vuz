@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctime>
 
 #define AMOUNT_NUMBERS 20 // кратно 20
 
 void fillOriginFile(FILE * pf)
 {
+    srand(time(NULL));
     int posNumber = rand() % 100 + 1;
     int negNumber = -1 * (rand() % 100 + 1);
     for (int i = 0; i <= (int)(AMOUNT_NUMBERS / 20) ; ++i)
@@ -30,19 +32,24 @@ void outputDataFile(FILE * pf)
     
 }
 
-void fillResultFile(FILE * in, FILE * from)
+void sortAndWriteNumberfFile(int in [AMOUNT_NUMBERS], FILE * from)
 {
-    int fromfData [AMOUNT_NUMBERS] = {0};
     int fromfNumber;
     int id_pos = 0, id_neg = AMOUNT_NUMBERS / 2;
     
     for (int i = 0; i < AMOUNT_NUMBERS; ++i) {
         fscanf(from, "%d", &fromfNumber);
         if (fromfNumber > 0)
-            fromfData[id_pos++] = fromfNumber;
+            in[id_pos++] = fromfNumber;
         else
-            fromfData[id_neg++] = fromfNumber; 
+            in[id_neg++] = fromfNumber; 
     }
+}
+
+void fillResultFile(FILE * in, FILE * from)
+{
+    int fromfData [AMOUNT_NUMBERS] = {0};
+    sortAndWriteNumberfFile(fromfData, from);
 
     int i_p = 0, i_n = AMOUNT_NUMBERS/2;
     for (int i = 2; i <= (int)(AMOUNT_NUMBERS / 2); i += 2)

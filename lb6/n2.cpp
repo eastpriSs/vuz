@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define MAX_TEXT_SIZE 255
-#define TEXT "q a b a b v d"
+#define TEXT "hello world!"
 
 #define SEPARATORS " -,/.!?():;\'\""
 
@@ -54,7 +54,7 @@ int findMax(int a[MAX_TEXT_SIZE/2], int len)
 void outResult(FILE * f)
 {
     char wordsf [MAX_TEXT_SIZE/2][MAX_TEXT_SIZE];
-    char outputedWordsf [MAX_TEXT_SIZE/2][MAX_TEXT_SIZE]; // место!!
+    char outputedWordsf [MAX_TEXT_SIZE/4][MAX_TEXT_SIZE];
     char strfF [MAX_TEXT_SIZE];
     int amountOfWordsInText[MAX_TEXT_SIZE/2] = {0};
 
@@ -79,13 +79,15 @@ void outResult(FILE * f)
 
     // Вывод слов, если они упоминаются в тексте максимальное кол-во раз раз
     int amountOutLex = 0;
-    printf("\nMeet most:");
-    for (int i = 0; i < amountLex; ++i)
+    printf("\n\nMet most times:");
+    for (int i = 0; i < amountLex; ++i) {
         if (amountOfWordsInText[i] == max 
                     && !findWord(outputedWordsf, amountOutLex, wordsf[i])) {
             strcpy(outputedWordsf[amountOutLex++], wordsf[i]);
             printf("\n%s, amount: %d", wordsf[i], amountOfWordsInText[i]);
         }
+    }
+    if (amountOutLex == 1) puts("\n--- Only one word");
 }
 
 int main()
@@ -93,13 +95,12 @@ int main()
     FILE * ptrFileW = fopen("out2.txt", "w");
     FILE * ptrFileR = fopen("out2.txt", "r");
     
-    printf("\nOrigin file:");
+    printf("\nOrigin file: ");
     fillFile(ptrFileW);
     fclose(ptrFileW);
     outputDataFile(ptrFileR);
     
     fseek(ptrFileR, 0, SEEK_SET); // сброс указателя
 
-    printf("\nResult:");
     outResult(ptrFileR);
 }

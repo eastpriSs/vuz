@@ -3,13 +3,14 @@
 #include <string.h>
 
 #define MAX_TEXT_SIZE 255
-#define TEXT "hello world!"
 
 #define SEPARATORS " -,/.!?():;\'\""
 
-void fillFile(FILE * f)
+void fillFile(FILE * f, char text [] )
 {
-    fputs(TEXT, f);
+    char *ptrText = text;
+    while (*ptrText != '\0' )
+        fputc(*ptrText++, f);
 }
 
 void outputDataFile(FILE * f)
@@ -94,9 +95,13 @@ int main()
 {
     FILE * ptrFileW = fopen("out2.txt", "w");
     FILE * ptrFileR = fopen("out2.txt", "r");
-    
+    char text [MAX_TEXT_SIZE];
+
+    printf("\nEnter text: ");
+    gets_s(text, MAX_TEXT_SIZE);
+
     printf("\nOrigin file: ");
-    fillFile(ptrFileW);
+    fillFile(ptrFileW, text);
     fclose(ptrFileW);
     outputDataFile(ptrFileR);
     

@@ -3,7 +3,7 @@
 
 #define MAX_INPUT_BUFFER 1024
 #define MAX_FIO_BUFFER 255
-#define MAX_CHILD_COUNT 10
+#define MAX_CHILD_COUNT 15
 #define MAX_EMPL_AMOUNT 100
 
 
@@ -37,7 +37,7 @@ void inputTable()
     do{
         printf("\nEnter amount of employees( < %d): ", MAX_EMPL_AMOUNT);
         scanf("%d", &countEmpl); 
-    } while(countEmpl > MAX_EMPL_AMOUNT);
+    } while(countEmpl > MAX_EMPL_AMOUNT || countEmpl < 0);
 
     for (size_t i = 0; i < countEmpl; ++i)
     {
@@ -48,8 +48,12 @@ void inputTable()
         gets(table[i].fio);
 
         printf("amount childs:");
-        scanf("%d", &table[i].amountChild);
-        
+        int am = 0;
+        do{
+            scanf("%d", &am);
+        }while(am < 0 || am > MAX_CHILD_COUNT);
+        table[i].amountChild = am;
+
         printf("Enter age of childs with spaces:");
         for (size_t j = 0; j < table[i].amountChild; ++j)
         {

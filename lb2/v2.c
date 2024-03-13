@@ -86,6 +86,7 @@ void makeCall(int currentAge)
             puts(table[i]);
             isFind = 1;
         }
+        free(la);
     }
     
     if (!isFind) printf("\nFor age = %d did not found any games.\n", currentAge);

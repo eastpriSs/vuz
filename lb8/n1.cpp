@@ -8,6 +8,7 @@ class Product
         Article arcl;
         int cost;
         Product(Article, int); 
+        Product(const Product&) = default; 
 };
 
 Product::Product(Article ar, int c)
@@ -26,7 +27,7 @@ class Market
     public:
         Market();
         Market(Product, int, int);
-        Market(const Market& ) = default;
+        Market(const Market&) = default;
         ~Market() { prdct.~Product(); printf("\nDestructor called!\n"); };
 
         void sellProducts(int);
@@ -105,7 +106,8 @@ void Market::print() const
 
 int main()
 {
-    Market m = Market(Product(Article::BOOK, 300), 50, 0);
+    Market a = Market(Product(Article::BOOK, 300), 50, 0);
+    Market m = a;
     
     printf("\n\n1) print");
     m.print();

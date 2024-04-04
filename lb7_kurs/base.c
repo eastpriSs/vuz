@@ -15,8 +15,6 @@
 #define CORRECT_RETURN 0
 #define FAILURE_RETURN 1
 
-#define COLUMN_BYTE_SIZE 35
-
 #define UNDEFINED_STRING "!UNDF\0"
 
 struct DataBase
@@ -27,6 +25,7 @@ struct DataBase
     char _isDef;
 };
 
+void closedb(struct DataBase * db);
 
 void initDefault(struct DataBase * db)
 {
@@ -62,7 +61,7 @@ void changeFName(struct DataBase * db, char name [])
 
 void dbcpy(struct DataBase * dbt, struct DataBase * dbf)
 {
-    dbt->_ptrFile = dbf->_ptrFile;
+    dbt->_ptrFile = fopen(dbf->_fName, dbf->_fMode);
     strcpy(dbt->_fMode, dbf->_fMode);
     strcpy(dbt->_fName, dbf->_fName);
     dbt->_isDef = dbf->_isDef;
@@ -84,11 +83,11 @@ void writeLine(struct DataBase * db, char * data)
     fputc('\n', db->_ptrFile);
 }
 
-char * getRow(struct DataBase * db)
+char * getLine(struct DataBase * db)
 {
-    static char row [MAX_LINE_SIZE];
-    fgets(row, MAX_LINE_SIZE, db->_ptrFile);
-    return row;
+    static char line [MAX_LINE_SIZE];
+    if (fgets(line, MAX_LINE_SIZE, db->_ptrFile)) return line;
+    return NULL;
 }
 
 void resetPtr(struct DataBase * db)
@@ -98,7 +97,8 @@ void resetPtr(struct DataBase * db)
 
 void closedb(struct DataBase * db)
 {
+    resetPtr(db);
     fclose(db->_ptrFile);
-    initDefault(db);
 }
+
 // DATABASE
